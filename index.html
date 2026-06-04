@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-lang="pt">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -11,151 +11,832 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+
 :root{
-  --bg:#080a0b;--bg2:#0d1012;
-  --cyan:#5AF4FF;--amber:#FFAE3E;--red:#FF3C01;--teal:#177980;
-  --text:#F0EDE8;--muted:rgba(240,237,232,0.45);--dim:rgba(240,237,232,0.18);
-  --border:rgba(90,244,255,0.08);--border-warm:rgba(255,174,62,0.15);
+  --bg:#080a0b;
+  --bg2:#0d1012;
+  --cyan:#5AF4FF;
+  --amber:#FFAE3E;
+  --red:#FF3C01;
+  --teal:#177980;
+  --warm:#80776C;
+  --text:#F0EDE8;
+  --muted:rgba(240,237,232,0.55);
+  --dim:rgba(240,237,232,0.38);
+  --border:rgba(90,244,255,0.08);
+  --border-warm:rgba(255,174,62,0.15);
   --px:clamp(20px,6vw,64px);
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:16px;line-height:1.7;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  font-size:16px;
+  line-height:1.7;
+}
+
+/* grain overlay */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  pointer-events:none;z-index:9999;
+  opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+}
+
+/* ─── KEYFRAMES ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@keyframes glitch{0%,95%,100%{transform:translate(0)}96%{transform:translate(-2px,1px)}97%{transform:translate(2px,-1px)}98%{transform:translate(-1px,2px)}99%{transform:translate(1px,-2px)}}
-.ticker{background:var(--teal);height:32px;overflow:hidden;display:flex;align-items:center;position:relative;z-index:10;}
-.ticker-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;background:var(--cyan);color:#000;padding:0 14px;height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;}
+@keyframes glitch{
+  0%,95%,100%{transform:translate(0)}
+  96%{transform:translate(-2px,1px)}
+  97%{transform:translate(2px,-1px)}
+  98%{transform:translate(-1px,2px)}
+  99%{transform:translate(1px,-2px)}
+}
+
+/* ─── TICKER ─── */
+.ticker{
+  background:var(--teal);
+  height:32px;overflow:hidden;
+  display:flex;align-items:center;
+  position:relative;z-index:10;
+}
+.ticker-label{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;
+  background:var(--cyan);color:#000;
+  padding:0 14px;height:100%;
+  display:flex;align-items:center;
+  white-space:nowrap;flex-shrink:0;
+}
 .ticker-wrap{overflow:hidden;flex:1}
-.ticker-track{display:flex;align-items:center;height:32px;white-space:nowrap;animation:ticker 40s linear infinite;}
-.ticker-item{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.7);padding-right:48px;}
+.ticker-track{
+  display:flex;align-items:center;height:32px;
+  white-space:nowrap;
+  animation:ticker 40s linear infinite;
+}
+.ticker-item{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.7);
+  padding-right:48px;
+}
 .ticker-sep{color:var(--cyan);padding-right:48px}
-header{display:flex;align-items:center;justify-content:space-between;padding:0 var(--px);height:60px;border-bottom:1px solid var(--border);background:rgba(8,10,11,.96);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
-.hd-brand{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+
+/* ─── HEADER ─── */
+header{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  padding:0 var(--px);height:60px;
+  border-bottom:1px solid var(--border);
+  background:rgba(8,10,11,.96);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.hd-brand{
+  font-family:'Syne',sans-serif;
+  font-size:15px;font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
 .hd-brand span{color:var(--cyan)}
-.hd-nav{display:flex;align-items:center;gap:0;}
-.hd-nav a{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 14px;transition:color .2s;}
+.hd-nav{
+  display:flex;align-items:center;gap:0;
+  justify-self:center;
+}
+.hd-right{
+  display:flex;align-items:center;gap:6px;
+  justify-self:end;
+}
+.hd-nav a{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-decoration:none;
+  padding:6px 14px;
+  transition:color .2s;
+}
 .hd-nav a:hover{color:var(--cyan)}
-.hd-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 2s infinite;margin-left:16px;}
+.hd-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--red);
+  animation:pulse 2s infinite;
+  margin-left:16px;
+}
 @media(max-width:600px){.hd-nav{display:none}}
-.hero{min-height:clamp(480px,80vh,760px);display:flex;align-items:flex-end;padding:0 var(--px) clamp(48px,8vw,80px);position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
-.hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:1;}
-.hero-bg{position:absolute;inset:0;background-image:url('https://drive.google.com/thumbnail?id=1DV34E0-wKRiORYSfiL3vEjcOZn3PX_Q_&sz=w1600');background-size:cover;background-position:70% center;filter:brightness(.25) saturate(.6);}
-.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(23,121,128,.18) 0%,transparent 60%),linear-gradient(180deg,rgba(8,10,11,0) 0%,rgba(8,10,11,.95) 100%);}
-.hero-inner{position:relative;z-index:2;max-width:900px;animation:fadeUp .8s ease both;}
-.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+
+/* ─── HERO ─── */
+.hero{
+  min-height:clamp(480px,80vh,760px);
+  display:flex;align-items:flex-end;
+  padding:0 var(--px) clamp(48px,8vw,80px);
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+
+/* scanline effect */
+.hero::after{
+  content:'';
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,transparent 2px,
+    rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px
+  );
+  pointer-events:none;z-index:1;
+}
+
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:url('https://drive.google.com/thumbnail?id=1DkhEpz7Ddhpm3QgAqfD3Oxd2KkBOFDmo&sz=w1600');
+  background-size:cover;background-position:center center;
+  filter:brightness(.38) saturate(.65);
+}
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 50%,rgba(23,121,128,.15) 0%,transparent 60%),
+    linear-gradient(180deg,rgba(8,10,11,.55) 0%,rgba(8,10,11,.18) 45%,rgba(8,10,11,.82) 100%);
+}
+
+.hero-inner{
+  position:relative;z-index:2;
+  max-width:900px;
+  animation:fadeUp .8s ease both;
+}
+
+.hero-eyebrow{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:24px;
+}
 .hero-line{width:32px;height:1px;background:var(--cyan)}
-.hero-eye{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);}
-.hero-name{font-family:'Syne',sans-serif;font-size:clamp(52px,10vw,110px);font-weight:800;line-height:.92;letter-spacing:-.02em;animation:glitch 8s infinite;}
+.hero-eye{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--cyan);
+}
+
+.hero-name{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(52px,10vw,110px);
+  font-weight:800;
+  line-height:.92;
+  letter-spacing:-.02em;
+  animation:glitch 8s infinite;
+}
 .hero-name .first{display:block;color:var(--text)}
-.hero-name .last{display:block;-webkit-text-stroke:1px var(--cyan);color:transparent;}
-.hero-role{font-family:'DM Sans',sans-serif;font-size:clamp(15px,2.2vw,20px);font-weight:300;color:var(--muted);margin-top:20px;max-width:520px;line-height:1.5;animation:fadeUp .8s .15s ease both;}
+.hero-name .last{
+  display:block;
+  -webkit-text-stroke:1px var(--cyan);
+  color:transparent;
+}
+
+.hero-role{
+  font-family:'DM Sans',sans-serif;
+  font-size:clamp(15px,2.2vw,20px);
+  font-weight:300;
+  color:var(--muted);
+  margin-top:20px;
+  max-width:520px;
+  line-height:1.5;
+  animation:fadeUp .8s .15s ease both;
+}
 .hero-role strong{color:var(--amber);font-weight:500}
-.hero-role-en{font-family:'Space Mono',monospace;font-size:clamp(10px,1.4vw,13px);color:var(--dim);margin-top:8px;letter-spacing:.04em;animation:fadeUp .8s .25s ease both;}
-.hero-cta{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;animation:fadeUp .8s .35s ease both;}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:var(--cyan);color:#000;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background .2s,transform .15s;}
+
+.hero-role-en{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(10px,1.4vw,13px);
+  color:var(--dim);
+  margin-top:8px;
+  letter-spacing:.04em;
+  animation:fadeUp .8s .25s ease both;
+}
+
+.hero-cta{
+  display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;
+  animation:fadeUp .8s .35s ease both;
+}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 26px;
+  background:var(--cyan);color:#000;
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none;
+  border:none;cursor:pointer;
+  transition:background .2s,transform .15s;
+}
 .btn-primary:hover{background:#7af8ff;transform:translateY(-2px)}
-.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:1px solid var(--dim);cursor:pointer;transition:all .2s;}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;
+  background:transparent;
+  color:var(--muted);
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  text-decoration:none;
+  border:1px solid var(--dim);
+  cursor:pointer;
+  transition:all .2s;
+}
 .btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
-.hero-vert{position:absolute;right:var(--px);top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);white-space:nowrap;z-index:2;}
+
+/* vertical text */
+.hero-vert{
+  position:absolute;right:var(--px);top:50%;
+  transform:translateY(-50%) rotate(90deg);
+  transform-origin:center;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:4px;
+  text-transform:uppercase;color:var(--dim);
+  white-space:nowrap;z-index:2;
+}
 @media(max-width:680px){.hero-vert{display:none}}
-.section{padding:clamp(52px,8vw,96px) var(--px);border-bottom:1px solid var(--border);}
+
+/* ─── SECTION BASE ─── */
+.section{
+  padding:clamp(52px,8vw,96px) var(--px);
+  border-bottom:1px solid var(--border);
+}
 .section.alt{background:rgba(13,16,18,.6)}
 .sec-wrap{max-width:960px;margin:0 auto}
-.sec-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:clamp(32px,5vw,56px);flex-wrap:wrap;}
-.sec-num{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
-.sec-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:700;line-height:1.05;letter-spacing:-.01em;}
-.sec-title em{font-style:italic;color:var(--cyan);font-weight:400;}
-.sec-en{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:6px;}
-.case-hero{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:32px;border:1px solid var(--border);}
+
+.sec-header{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;margin-bottom:clamp(32px,5vw,56px);
+  flex-wrap:wrap;
+}
+.sec-left{}
+.sec-num{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--teal);
+  margin-bottom:8px;
+}
+.sec-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(28px,5vw,44px);
+  font-weight:700;line-height:1.05;
+  letter-spacing:-.01em;
+}
+.sec-title em{
+  font-style:italic;
+  color:var(--cyan);
+  font-weight:400;
+}
+.sec-en{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--dim);margin-top:6px;
+}
+
+/* ─── CASE MARY ─── */
+.case-hero{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+  margin-bottom:32px;
+  border:1px solid var(--border);
+}
 @media(max-width:640px){.case-hero{grid-template-columns:1fr}}
-.case-img{aspect-ratio:4/3;overflow:hidden;background:#0d1012;position:relative;}
-.case-img img{width:100%;height:100%;object-fit:cover;filter:saturate(.7) brightness(.8);transition:transform .6s,filter .4s;}
+
+.case-img{
+  aspect-ratio:4/3;overflow:hidden;
+  background:#0d1012;position:relative;
+}
+.case-img img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.7) brightness(.8);
+  transition:transform .6s,filter .4s;
+}
 .case-img:hover img{transform:scale(1.05);filter:saturate(.9) brightness(.9)}
-.case-img-main{grid-row:1/3;aspect-ratio:auto;}
+
+.case-img-main{
+  grid-row:1/3;
+  aspect-ratio:auto;
+}
 @media(max-width:640px){.case-img-main{grid-row:auto;aspect-ratio:4/3}}
-.case-img-main::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(23,121,128,.2) 0%,transparent 60%);pointer-events:none;}
-.case-body{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,48px);align-items:start;padding-top:8px;}
+
+/* teal accent on main image */
+.case-img-main::after{
+  content:'';position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(23,121,128,.2) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+.case-body{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:clamp(24px,4vw,48px);
+  align-items:start;
+  padding-top:8px;
+}
 @media(max-width:640px){.case-body{grid-template-columns:1fr}}
-.case-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;}
-.case-title{font-family:'Syne',sans-serif;font-size:clamp(22px,3.5vw,32px);font-weight:700;line-height:1.1;margin-bottom:16px;}
-.case-desc{font-size:15px;font-weight:300;color:rgba(240,237,232,.7);line-height:1.8;margin-bottom:20px;}
-.case-desc-en{font-size:13px;font-weight:300;font-style:italic;color:var(--dim);line-height:1.7;margin-bottom:24px;border-left:2px solid var(--teal);padding-left:14px;}
-.case-link{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);text-decoration:none;transition:gap .2s;}
+
+.case-info{}
+.case-label{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--teal);
+  margin-bottom:12px;
+}
+.case-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(22px,3.5vw,32px);
+  font-weight:700;line-height:1.1;
+  margin-bottom:16px;
+}
+.case-desc{
+  font-size:15px;font-weight:300;
+  color:rgba(240,237,232,.82);
+  line-height:1.8;margin-bottom:20px;
+}
+.case-desc-en{
+  font-size:13px;font-weight:300;
+  font-style:italic;
+  color:rgba(240,237,232,.55);
+  line-height:1.7;margin-bottom:24px;
+  border-left:2px solid var(--teal);
+  padding-left:14px;
+}
+.case-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--cyan);
+  text-decoration:none;
+  transition:gap .2s;
+}
 .case-link:hover{gap:14px}
-.case-tech-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:16px;}
-.tech-list{display:flex;flex-direction:column;gap:8px;}
-.tech-item{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:300;color:rgba(240,237,232,.65);}
-.tech-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;}
-.case-tag{display:inline-flex;margin-top:24px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#000;background:var(--red);padding:5px 12px;}
-.venice{margin-top:32px;border:1px solid rgba(90,244,255,.15);padding:24px 28px;position:relative;overflow:hidden;background:rgba(23,121,128,.06);}
-.venice::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--teal),transparent);}
-.venice-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;}
-.venice-text{font-size:14px;font-weight:300;color:rgba(240,237,232,.7);line-height:1.6;}
-.venice-text strong{color:var(--text);font-weight:500}
-.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:2px;}
-.work-card{background:var(--bg2);border:1px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:border-color .25s;text-decoration:none;color:inherit;display:block;}
+
+.case-tech{}
+.case-tech-title{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--dim);
+  margin-bottom:16px;
+}
+.tech-list{
+  display:flex;flex-direction:column;gap:8px;
+}
+.tech-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:14px;font-weight:300;
+  color:rgba(240,237,232,.82);
+}
+.tech-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--amber);flex-shrink:0;
+}
+
+.case-tag{
+  display:inline-flex;
+  margin-top:24px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;
+  color:#000;
+  background:var(--red);
+  padding:5px 12px;
+}
+
+/* ─── VENICE CALLOUT ─── */
+.venice{
+  margin-top:40px;
+  padding:28px 0 0;
+  border-top:1px solid rgba(240,237,232,.1);
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:0 28px;
+  align-items:start;
+}
+.venice-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--red);
+  white-space:nowrap;
+  padding-top:2px;
+}
+.venice-text{
+  font-size:14px;font-weight:300;
+  color:rgba(240,237,232,.72);
+  line-height:1.7;
+}
+.venice-text strong{
+  color:var(--text);
+  font-weight:400;
+  font-style:normal;
+}
+.case-tag{
+  display:inline-flex;
+  margin-top:20px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(240,237,232,.85);
+  background:var(--red);
+  padding:5px 12px;
+}
+
+/* ─── WORKS GRID (outros trabalhos) ─── */
+.works-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));
+  gap:2px;
+}
+.work-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+  transition:border-color .25s;
+  text-decoration:none;color:inherit;
+  display:block;
+}
 .work-card:hover{border-color:rgba(255,174,62,.3)}
-.work-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,1,.36,1);}
+.work-card::before{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:2px;
+  background:var(--amber);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .35s cubic-bezier(.22,1,.36,1);
+}
 .work-card:hover::before{transform:scaleX(1)}
-.work-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;filter:brightness(.6) saturate(.7);transition:transform .5s,filter .3s;}
-.work-card:hover .work-img{transform:scale(1.04);filter:brightness(.75) saturate(.85);}
+
+.work-img{
+  width:100%;aspect-ratio:16/9;
+  object-fit:cover;display:block;
+  filter:brightness(.6) saturate(.7);
+  transition:transform .5s,filter .3s;
+}
+.work-card:hover .work-img{
+  transform:scale(1.04);
+  filter:brightness(.75) saturate(.85);
+}
 .work-body{padding:20px}
-.work-cat{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:8px;}
-.work-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:600;margin-bottom:6px;}
-.work-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.6;}
-.about-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:clamp(32px,6vw,72px);align-items:start;}
-@media(max-width:680px){.about-grid{grid-template-columns:1fr}}
-.about-img-wrap{position:relative;}
-.about-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:75% 20%;filter:grayscale(30%) brightness(.85);display:block;}
-.about-img-frame{position:absolute;top:-8px;left:-8px;right:8px;bottom:8px;border:1px solid var(--teal);pointer-events:none;z-index:-1;}
-.about-img-label{position:absolute;bottom:16px;left:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);background:rgba(8,10,11,.7);padding:4px 10px;}
-.about-bio{font-size:clamp(15px,2vw,17px);font-weight:300;line-height:1.85;color:rgba(240,237,232,.78);margin-bottom:20px;}
+.work-cat{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--amber);
+  margin-bottom:8px;
+}
+.work-title{
+  font-family:'Syne',sans-serif;
+  font-size:20px;font-weight:600;
+  margin-bottom:6px;
+}
+.work-desc{
+  font-size:13px;font-weight:300;
+  color:rgba(240,237,232,.68);line-height:1.6;
+}
+
+/* ─── ABOUT ─── */
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:clamp(28px,4vw,48px);
+  align-items:start;
+}
+
+.about-img-wrap{
+  position:relative;
+}
+.about-img{
+  width:100%;aspect-ratio:16/9;
+  object-fit:cover;
+  object-position:center 40%;
+  filter:grayscale(20%) brightness(.88);
+  display:block;
+}
+.about-img-frame{
+  position:absolute;
+  top:-8px;left:-8px;right:8px;bottom:8px;
+  border:1px solid var(--teal);
+  pointer-events:none;z-index:-1;
+}
+.about-img-label{
+  position:absolute;bottom:16px;left:16px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.5);
+  background:rgba(8,10,11,.7);
+  padding:4px 10px;
+}
+
+.about-content{}
+.about-bio{
+  font-size:clamp(15px,2vw,17px);
+  font-weight:300;line-height:1.85;
+  color:rgba(240,237,232,.85);
+  margin-bottom:20px;
+}
 .about-bio strong{color:var(--text);font-weight:500}
-.about-bio-en{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;font-style:italic;color:var(--dim);line-height:1.75;border-left:2px solid var(--amber);padding-left:16px;margin-bottom:32px;}
-.skills-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-.skill-tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);border:1px solid rgba(23,121,128,.35);padding:5px 12px;}
-.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,80px);align-items:center;}
+.about-bio-en{
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:300;
+  font-style:italic;
+  color:var(--dim);
+  line-height:1.75;
+  border-left:2px solid var(--amber);
+  padding-left:16px;
+  margin-bottom:32px;
+}
+
+.skills-row{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:8px;
+}
+.skill-tag{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--teal);
+  border:1px solid rgba(23,121,128,.35);
+  padding:5px 12px;
+}
+
+/* ─── CONTACT ─── */
+.contact-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:clamp(32px,6vw,80px);
+  align-items:center;
+}
 @media(max-width:640px){.contact-inner{grid-template-columns:1fr}}
-.contact-statement{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,38px);font-weight:700;line-height:1.1;letter-spacing:-.01em;}
-.contact-statement em{display:block;font-style:italic;font-weight:400;color:var(--cyan);}
-.contact-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
-.contact-email{font-family:'Syne',sans-serif;font-size:clamp(16px,2.5vw,22px);font-weight:600;color:var(--cyan);text-decoration:none;display:block;margin-bottom:8px;transition:color .2s;}
+
+.contact-statement{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(24px,4vw,38px);
+  font-weight:700;line-height:1.1;
+  letter-spacing:-.01em;
+}
+.contact-statement em{
+  display:block;
+  font-style:italic;font-weight:400;
+  color:var(--cyan);
+}
+
+.contact-right{}
+.contact-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:4px;
+  text-transform:uppercase;color:var(--dim);
+  margin-bottom:12px;
+}
+.contact-email{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(16px,2.5vw,22px);
+  font-weight:600;
+  color:var(--cyan);
+  text-decoration:none;
+  display:block;margin-bottom:8px;
+  transition:color .2s;
+}
 .contact-email:hover{color:#7af8ff}
-.contact-note{font-size:13px;font-weight:300;color:var(--dim);font-style:italic;}
-footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.ft-brand{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);}
-.ft-domain{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--teal);}
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.contact-whatsapp{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Syne',sans-serif;
+  font-size:clamp(14px,2vw,18px);
+  font-weight:500;
+  color:var(--amber);
+  text-decoration:none;
+  margin-bottom:8px;
+  transition:color .2s;
+}
+.contact-whatsapp:hover{color:#ffc563}
+.contact-note{
+  font-size:13px;font-weight:300;
+  color:var(--dim);font-style:italic;
+}
+
+/* ─── FOOTER ─── */
+footer{
+  padding:24px var(--px);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.ft-brand{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--dim);
+}
+.ft-domain{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  color:var(--teal);
+}
+
+/* ─── LANGUAGE TOGGLE ─── */
+html[data-lang="en"] .pt-only{display:none!important}
+html[data-lang="pt"] .en-only{display:none!important}
+
+.lang-btn{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);
+  background:none;
+  border:1px solid var(--dim);
+  padding:4px 10px;
+  cursor:pointer;
+  transition:all .2s;
+  margin-left:8px;
+}
+.lang-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.lang-btn.active{border-color:var(--cyan);color:var(--cyan)}
+
+/* ─── SCROLL ANIMATIONS ─── */
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .7s ease,transform .7s ease;
+}
 .reveal.visible{opacity:1;transform:none}
+
+/* ─── SERIES GALLERY ─── */
+.series-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:2px;
+  margin-top:2px;
+  margin-bottom:32px;
+}
+@media(max-width:800px){.series-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.series-grid{grid-template-columns:repeat(2,1fr)}}
+
+.series-item{position:relative;overflow:hidden;}
+.series-img-wrap{
+  aspect-ratio:1;overflow:hidden;background:#0d1012;
+}
+.series-img-wrap img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.6) brightness(.75);
+  transition:transform .5s,filter .4s;
+  display:block;
+}
+.series-item:hover .series-img-wrap img{
+  transform:scale(1.08);
+  filter:saturate(.85) brightness(.9);
+}
+.series-label{
+  position:absolute;bottom:0;left:0;right:0;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;
+  color:rgba(240,237,232,.6);
+  background:linear-gradient(transparent,rgba(8,10,11,.8));
+  padding:16px 10px 8px;
+  pointer-events:none;
+}
+
+/* ─── LIGHTBOX ─── */
+.lb-overlay{
+  display:none;
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(4,5,6,.92);
+  backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+.lb-overlay.open{display:flex}
+.lb-box{
+  position:relative;
+  width:min(900px,92vw);
+}
+.lb-ratio{
+  position:relative;
+  padding-bottom:56.25%;
+  background:#000;
+}
+.lb-ratio iframe{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  border:none;
+}
+.lb-close{
+  position:absolute;
+  top:-44px;right:0;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:none;border:none;
+  cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  transition:color .2s;
+}
+.lb-close:hover{color:var(--cyan)}
+.lb-close::before{
+  content:'✕';
+  font-size:16px;
+  color:var(--cyan);
+}
+.lb-fallback{
+  display:none;
+  position:absolute;inset:0;
+  flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:20px;
+  background:#0d1012;
+}
+.lb-fallback.visible{display:flex}
+.lb-fallback-msg{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* play badge nos cards de vídeo */
+.work-card[data-video] .work-img-wrap{position:relative;display:block}
+.work-play{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:52px;height:52px;
+  border-radius:50%;
+  background:rgba(90,244,255,.15);
+  border:1.5px solid var(--cyan);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  transition:background .25s,transform .25s;
+}
+.work-play::after{
+  content:'';
+  border:0 solid transparent;
+  border-left:18px solid var(--cyan);
+  border-top:11px solid transparent;
+  border-bottom:11px solid transparent;
+  margin-left:4px;
+}
+.work-card[data-video]:hover .work-play{
+  background:rgba(90,244,255,.28);
+  transform:translate(-50%,-50%) scale(1.1);
+}
 </style>
 </head>
 <body>
 
+<!-- TICKER -->
 <div class="ticker">
   <div class="ticker-label">RT</div>
   <div class="ticker-wrap">
     <div class="ticker-track">
-      <span class="ticker-item">Animação 3D</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Direção Audiovisual</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Arte Contemporânea</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">3D Animation</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Audiovisual Direction</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Visualização Industrial</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Blender · After Effects · Premiere · Reaper</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Belo Horizonte → Venezia</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Animação 3D</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Direção Audiovisual</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Arte Contemporânea</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">3D Animation</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Audiovisual Direction</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Visualização Industrial</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Blender · After Effects · Premiere · Reaper</span><span class="ticker-sep">✦</span>
-      <span class="ticker-item">Belo Horizonte → Venezia</span><span class="ticker-sep">✦</span>
+      <span class="ticker-item">Animação 3D</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Direção Audiovisual</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Arte Contemporânea</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">3D Animation</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Audiovisual Direction</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Contemporary Art</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Blender · After Effects · Premiere · Reaper</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Belo Horizonte → Venezia</span>
+      <span class="ticker-sep">✦</span>
+      <!-- duplicate for loop -->
+      <span class="ticker-item">Animação 3D</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Direção Audiovisual</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Arte Contemporânea</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">3D Animation</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Audiovisual Direction</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Contemporary Art</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Blender · After Effects · Premiere · Reaper</span>
+      <span class="ticker-sep">✦</span>
+      <span class="ticker-item">Belo Horizonte → Venezia</span>
+      <span class="ticker-sep">✦</span>
     </div>
   </div>
 </div>
 
+<!-- HEADER -->
 <header>
   <div class="hd-brand">Rafael <span>Trindade</span></div>
   <nav class="hd-nav">
@@ -163,9 +844,14 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </nav>
-  <div class="hd-dot"></div>
+  <div class="hd-right">
+    <button class="lang-btn active" id="btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <div class="hd-dot"></div>
+  </div>
 </header>
 
+<!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-inner">
@@ -177,16 +863,29 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
       <span class="first">Rafael</span>
       <span class="last">Trindade</span>
     </h1>
-    <p class="hero-role">
+    <p class="hero-role pt-only">
       <strong>Animação e direção audiovisual</strong> para arte contemporânea.<br>
       Da cerâmica ao espaço — obras que se movem.
     </p>
-    <p class="hero-role-en">
-      Animation &amp; audiovisual direction for contemporary art · Belo Horizonte, Brasil
+    <p class="hero-role en-only">
+      <strong>Animation &amp; audiovisual direction</strong> for contemporary art.<br>
+      From ceramics to space — works that move.
+    </p>
+    <p class="hero-role-en pt-only">
+      Animation &amp; audiovisual direction for contemporary art · Contagem, Brasil
+    </p>
+    <p class="hero-role-en en-only">
+      Based in Contagem, Brazil · Available for national and international projects
     </p>
     <div class="hero-cta">
-      <a href="#work" class="btn-primary">Ver trabalhos ↓</a>
-      <a href="#contact" class="btn-ghost">Contato</a>
+      <a href="#work" class="btn-primary">
+        <span class="pt-only">Ver trabalhos ↓</span>
+        <span class="en-only">See works ↓</span>
+      </a>
+      <a href="#contact" class="btn-ghost">
+        <span class="pt-only">Contato</span>
+        <span class="en-only">Contact</span>
+      </a>
     </div>
   </div>
   <div class="hero-vert">Belo Horizonte · Brasil · rafaeltrindade.art.br</div>
@@ -197,36 +896,87 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num">01 — Case Principal</div>
+        <div class="sec-num pt-only">01 — Case Principal</div>
+        <div class="sec-num en-only">01 — Main Case</div>
         <h2 class="sec-title">Mary Di <em>Iorio</em></h2>
-        <div class="sec-en">Main Case · Contemporary Ceramics in Motion</div>
+        <div class="sec-en pt-only">Cerâmica contemporânea em movimento</div>
+        <div class="sec-en en-only">Contemporary Ceramics in Motion</div>
       </div>
     </div>
+
+    <!-- imagens do case — Cathedra em destaque -->
     <div class="case-hero reveal">
       <div class="case-img case-img-main">
-        <img src="https://lh3.googleusercontent.com/sitesv/AA5AbUBKdf2cImvld4EWFNqjdY5gUhQZke-VHZ4mDBYyfdwRgLKKZSqhZezEDLRMx0kawzX4NJ3oG-oTpM7MLZqSoRDcm_hf4fuzceFTHI-OgUEXCgAgiksPEyF_905mOqA-vhKSI2VDkmmwf5aubwGyWbIQIAtLhgzKx6OOfvSTwfb6Spfl-MWW3kZsH1p4G38-qzCWTVnquGx5Be0gzDaSOQIUv1HAVlBzxXd6rXc=w1280" alt="Mary Di Iorio — Série Trama"/>
+        <img src="https://drive.google.com/thumbnail?id=1aaHfNSGOTaWzo6C2I81PjFmLM3AcD-H5&sz=w1600" alt="Mary Di Iorio — Série Cathedra"/>
       </div>
       <div class="case-img">
-        <img src="https://lh3.googleusercontent.com/sitesv/AA5AbUAAT0ZoGqpIHMID6jNz1qHwvgXIcCmEVulqeZjizsLodiks1nleD-aVz2ei5AWRjQ59NGrRSkvvFUHhDPNavXRSI-wJE0traQauNT6wrW6OsAgmRXiZvwao7jZAIHN9jqDQx3cnZ7-NPjRScCTFuwj5F_v10UH59lhLg6ZUOgXq58uIc31VK8cGx5y35f_B53V4taQn3tYS7YEkBNRxwxwL_5p7wEAHkWMRic0=w1280" alt="Mary Di Iorio — Série Trama detalhe"/>
+        <img src="https://drive.google.com/thumbnail?id=1RXW6BxppY27pW0OBntwBGe4kduGnkyQ1&sz=w800" alt="Mary Di Iorio — Série Cathedra detalhe"/>
       </div>
       <div class="case-img">
-        <img src="https://lh3.googleusercontent.com/sitesv/AA5AbUBHsc5hTbpTPj8EoAdw63G1xkS_JmPOsmN9HFNIdXNnYsJcDLlBUDPzHJwobZAepFtv3gUiv7j8slQgyWjNeoNeNELVCrkeLyHZfrKtpYF5TO_irCtmyvncHDDv6nGmgeyem-_LrfNWmK_udxHCc6leJLkD2QHkLUXhWFgBWwFSjGx1Lfi4inMnu-f0zYgx_0I0eRoV01Gpngko2laOI4=w1280" alt="Mary Di Iorio — Trama animação"/>
+        <img src="https://drive.google.com/thumbnail?id=1p6n2-uonO-mZOxm5bLuYwRDBA5DZUF44&sz=w800" alt="Mary Di Iorio — Série Cathedra"/>
       </div>
     </div>
+
+    <!-- galeria séries -->
+    <div class="series-grid reveal">
+      <div class="series-item">
+        <div class="series-img-wrap">
+          <img src="https://drive.google.com/thumbnail?id=1kxWNzypcOETW8haxyJlH55mt5oZmIFQx&sz=w800" alt="Série Cathedra"/>
+        </div>
+        <div class="series-label">Cathedra</div>
+      </div>
+      <div class="series-item">
+        <div class="series-img-wrap">
+          <img src="https://drive.google.com/thumbnail?id=1yu1thngzIap8y7LGBFPe-OD51PSVEA39&sz=w800" alt="Série Cathedra"/>
+        </div>
+        <div class="series-label">Cathedra</div>
+      </div>
+      <div class="series-item">
+        <div class="series-img-wrap">
+          <img src="https://drive.google.com/thumbnail?id=1bi6_4gc-DYk4tx1BbXZhy1Z94AleY8cA&sz=w800" alt="Série Cathedra"/>
+        </div>
+        <div class="series-label">Cathedra</div>
+      </div>
+      <div class="series-item">
+        <div class="series-img-wrap">
+          <img src="https://drive.google.com/thumbnail?id=1V_SwScz5EoFmyGnSzrvhXm8kP_WAK-uE&sz=w800" alt="Série Trama"/>
+        </div>
+        <div class="series-label">Trama</div>
+      </div>
+      <div class="series-item">
+        <div class="series-img-wrap">
+          <img src="https://drive.google.com/thumbnail?id=1jXaff6JMx30hokKjbX3taoUq_KRAppd6&sz=w800" alt="Série Trama"/>
+        </div>
+        <div class="series-label">Trama</div>
+      </div>
+      <div class="series-item">
+        <div class="series-img-wrap">
+          <img src="https://drive.google.com/thumbnail?id=1i1yMSGnsOjw3hqyiBDWcaPbi6yTthZeo&sz=w800" alt="Série Mandala"/>
+        </div>
+        <div class="series-label">Mandala</div>
+      </div>
+    </div>
+
+    <!-- descrição do case -->
     <div class="case-body reveal">
       <div class="case-info">
         <div class="case-label">Parceria contínua · 2022–presente</div>
         <h3 class="case-title">Cerâmica em movimento</h3>
-        <p class="case-desc">
-          Direção das animações das séries <strong>Trama</strong>, <strong>Cathedra</strong> e <strong>Mandala</strong> da artista Mary Di Iorio — ceramista com circulação internacional, publicada em revistas de arte contemporânea e com exposições na Europa. As obras físicas em cerâmica são animadas em 3D, transformando a escultura numa experiência audiovisual imersiva projetada no espaço expositivo.
+        <p class="case-desc pt-only">
+          Direção das animações das séries <strong>Trama</strong>, <strong>Cathedra</strong> e <strong>Mandala</strong> da artista Mary Di Iorio — ceramista com circulação internacional, publicada em revistas de arte contemporânea e com exposições na Europa. As obras físicas em cerâmica são animadas em 3D, transformando a escultura numa experiência audiovisual imersiva projetada no espaço expositivo — e no site da artista, também desenvolvido por mim.
         </p>
-        <p class="case-desc-en">
-          "Ceramics in motion. Ceramic artist working at the intersection of sculpture, video and sound." — As animações são parte constitutiva da obra, não documentação dela.
+        <p class="case-desc en-only">
+          Direction of the animation series <strong>Trama</strong>, <strong>Cathedra</strong> and <strong>Mandala</strong> for artist Mary Di Iorio — a ceramicist with international presence, published in contemporary art journals and exhibiting across Europe. Physical ceramic works animated in 3D, transforming sculpture into an immersive audiovisual experience projected in the exhibition space — and on the artist's website, also developed by me.
         </p>
-        <a href="https://www.marydiiorio.com.br" target="_blank" rel="noopener" class="case-link">Ver site da artista →</a>
-        <div class="case-tag">Exposição · Palazzo Pisani Revedin · Venezia · Jul 2026</div>
+        <a href="https://www.marydiiorio.com.br" target="_blank" rel="noopener" class="case-link pt-only">
+          Ver site da artista →
+        </a>
+        <a href="https://www.marydiiorio.com.br" target="_blank" rel="noopener" class="case-link en-only">
+          Visit artist's website →
+        </a>
       </div>
-      <div>
+
+      <div class="case-tech">
         <div class="case-tech-title">Stack técnico</div>
         <div class="tech-list">
           <div class="tech-item"><div class="tech-dot"></div>Blender — modelagem e animação 3D</div>
@@ -237,10 +987,16 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
         </div>
       </div>
     </div>
+
+    <!-- Venice callout -->
     <div class="venice reveal">
-      <div class="venice-label">✦ Exposição Internacional · Julho 2026</div>
-      <p class="venice-text">
-        <strong>Palazzo Pisani Revedin · Praça de São Marcos · Veneza, Itália</strong> — Em parceria com a Musa International Art Space. Instalação com 4 projetores. As animações da série Cathedra serão exibidas no espaço histórico do palazzo, integrando cerâmica física e animação 3D numa experiência imersiva.
+      <div class="venice-label pt-only">Exposição<br>Jul 2026</div>
+      <div class="venice-label en-only">Exhibition<br>Jul 2026</div>
+      <p class="venice-text pt-only">
+        <strong>Palazzo Pisani Revedin, Veneza</strong> — Série Cathedra em instalação com 4 projetores. Em parceria com a Musa International Art Space. Cerâmica física e animação 3D numa experiência imersiva no coração histórico de Veneza.
+      </p>
+      <p class="venice-text en-only">
+        <strong>Palazzo Pisani Revedin, Venice</strong> — Cathedra series in a 4-projector installation. In partnership with Musa International Art Space. Physical ceramics and 3D animation in an immersive experience at the historic heart of Venice.
       </p>
     </div>
   </div>
@@ -251,16 +1007,21 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num">02 — Outros Trabalhos</div>
-        <h2 class="sec-title">Direção <em>&</em> Produção</h2>
-        <div class="sec-en">Direction &amp; Production</div>
+        <div class="sec-num pt-only">02 — Outros Trabalhos</div>
+        <div class="sec-num en-only">02 — Other Works</div>
+        <h2 class="sec-title pt-only">Direção <em>&</em> Produção</h2>
+        <h2 class="sec-title en-only">Direction <em>&</em> Production</h2>
+        <div class="sec-en" style="display:none"></div>
       </div>
     </div>
-    <div class="works-grid reveal">
 
+    <div class="works-grid reveal">
       <!-- Concentus -->
-      <a href="https://www.youtube.com/watch?v=ReMkHYALLxg" target="_blank" rel="noopener" class="work-card">
-        <img class="work-img" src="https://img.youtube.com/vi/ReMkHYALLxg/maxresdefault.jpg" alt="Concentus Musicum BH"/>
+      <a href="#" data-video="ReMkHYALLxg" class="work-card">
+        <div class="work-img-wrap">
+          <img class="work-img" src="https://img.youtube.com/vi/ReMkHYALLxg/maxresdefault.jpg" alt="Concentus Musicum BH"/>
+          <div class="work-play"></div>
+        </div>
         <div class="work-body">
           <div class="work-cat">Videoarte · Música Erudita</div>
           <div class="work-title">Concentus Musicum BH</div>
@@ -269,8 +1030,11 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
       </a>
 
       <!-- Videoclipe Kater -->
-      <a href="https://www.youtube.com/watch?v=ep698KEspns" target="_blank" rel="noopener" class="work-card">
-        <img class="work-img" src="https://img.youtube.com/vi/ep698KEspns/maxresdefault.jpg" alt="Coragem — Carlos Kater"/>
+      <a href="#" data-video="ep698KEspns" class="work-card">
+        <div class="work-img-wrap">
+          <img class="work-img" src="https://img.youtube.com/vi/ep698KEspns/maxresdefault.jpg" alt="Coragem — Carlos Kater"/>
+          <div class="work-play"></div>
+        </div>
         <div class="work-body">
           <div class="work-cat">Videoclipe · Música Contemporânea</div>
           <div class="work-title">Coragem — Carlos Kater</div>
@@ -278,27 +1042,41 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
         </div>
       </a>
 
+      <!-- Sayounara -->
+      <a href="#" data-video="UaV_p5clIGI" class="work-card">
+        <div class="work-img-wrap">
+          <img class="work-img" src="https://img.youtube.com/vi/UaV_p5clIGI/maxresdefault.jpg" alt="Sayounara"/>
+          <div class="work-play"></div>
+        </div>
+        <div class="work-body">
+          <div class="work-cat">Curta de Animação · Design Sonoro</div>
+          <div class="work-title">Sayounara</div>
+          <p class="work-desc">Design sonoro completo. Curta de animação 2D produzido no CAAD/UFMG — Cinema de Animação e Artes Digitais.</p>
+        </div>
+      </a>
+
+      <!-- Costuras -->
+      <a href="#" data-video="4w1H53YlFjc" class="work-card">
+        <div class="work-img-wrap">
+          <img class="work-img" src="https://img.youtube.com/vi/4w1H53YlFjc/maxresdefault.jpg" alt="Costuras"/>
+          <div class="work-play"></div>
+        </div>
+        <div class="work-body">
+          <div class="work-cat">Curta · Som Direto & Mixagem</div>
+          <div class="work-title">Costuras</div>
+          <p class="work-desc">Som direto, tratamento e mixagem de som. Produção Pensar a Educação.</p>
+        </div>
+      </a>
+
       <!-- RF Balanças -->
       <a href="#" class="work-card">
-        <img class="work-img" src="https://drive.google.com/thumbnail?id=1sorDT5KMbYSFLPwrVzSSGhUd5SSG_I5E&sz=w800" alt="RF Balanças — Animação 3D Industrial"
-          onerror="this.style.background='#177980';this.style.display='block';this.style.minHeight='180px'"/>
+        <img class="work-img" src="https://drive.google.com/thumbnail?id=1KtmwYoHYgiS1P8vOkpBMLWmNTVtyyEkT&sz=w1600" alt="RF Balanças — Animação 3D Industrial"/>
         <div class="work-body">
           <div class="work-cat">Animação 3D · Visualização Industrial</div>
           <div class="work-title">RF Balanças</div>
-          <p class="work-desc">Modelagem, animação 3D e composição completas em Blender. Visualização do sistema automatizado de pesagem de caminhões — integrando ambiente, sensores e interface de controle em tempo real.</p>
+          <p class="work-desc">Modelagem, animação e composição completas em Blender. Visualização do sistema automatizado de pesagem de caminhões — ambiente, sensores, câmeras e interface de controle em operação.</p>
         </div>
       </a>
-
-      <!-- Franklin Barbearia -->
-      <a href="#" class="work-card">
-        <img class="work-img" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=60" alt="Franklin Barbearia"/>
-        <div class="work-body">
-          <div class="work-cat">Documentário · Identidade</div>
-          <div class="work-title">Franklin Barbearia</div>
-          <p class="work-desc">Filmagem documental e edição. Produção audiovisual para registro e identidade de marca.</p>
-        </div>
-      </a>
-
     </div>
   </div>
 </section>
@@ -308,27 +1086,47 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num">03 — Sobre</div>
-        <h2 class="sec-title">Quem <em>sou</em></h2>
-        <div class="sec-en">About</div>
+        <div class="sec-num pt-only">03 — Sobre</div>
+        <div class="sec-num en-only">03 — About</div>
+        <h2 class="sec-title pt-only">Quem <em>sou</em></h2>
+        <h2 class="sec-title en-only">Who <em>I am</em></h2>
+        <div class="sec-en" style="display:none"></div>
       </div>
     </div>
+
     <div class="about-grid reveal">
       <div class="about-img-wrap">
-        <img class="about-img" src="https://drive.google.com/thumbnail?id=11uSwE5okghfl_kBDeNsE9FzmijMolaxn&sz=w800" alt="Rafael Trindade"/>
+        <img class="about-img" src="https://drive.google.com/thumbnail?id=1u9sF-X-RRuBo7x9CQZqS8YMSp8pEtZyT&sz=w1600" alt="Rafael Trindade em estúdio"/>
         <div class="about-img-frame"></div>
-        <div class="about-img-label">BH · Brasil</div>
+        <div class="about-img-label">Estúdio · Contagem, MG</div>
       </div>
+
       <div class="about-content">
-        <p class="about-bio">
-          Parto do sensível para chegar ao técnico. Cada projeto começa com uma pergunta — <strong>o que essa ideia quer ser?</strong> — e só depois vem a ferramenta.
+        <p class="about-bio pt-only">
+          Formado em <strong>Cinema de Animação e Artes Digitais</strong> pelo CAAD/UFMG (2014–2019). Antes disso, passei pela Escola Guignard/UEMG — onde aprendi que arte começa antes da ferramenta.
         </p>
-        <p class="about-bio">
-          Animo, filmo, sonorizo, desenvolvo. Mas o que ofereço de verdade é uma forma de pensar junto: entrar na ideia de quem me contrata, empurrar até onde ela ainda não chegou, e construir o resultado que faz sentido visual e narrativo ao mesmo tempo.
+        <p class="about-bio pt-only">
+          Entre o mundo das artes plásticas e o cinema de animação existe uma tensão produtiva — dois universos que dialogam e guardam singularidades irredutíveis. É nessa tensão que desenvolvi minha forma de pensar imagem.
         </p>
-        <p class="about-bio-en">
-          I start from the sensible to arrive at the technical. What I truly offer is a way of thinking together — entering the idea, pushing it further, building the result that makes visual and narrative sense at the same time.
+        <p class="about-bio pt-only">
+          Arte abstrata, op art, pop art, rotoscopia, animação 2D e 3D, captação e mixagem de som — mergulhei em estéticas que raramente se encontram no mesmo currículo. Esse cruzamento é o que define como produzo. A parceria com <strong>Mary Di Iorio</strong> e projetos como a <strong>RF Balanças</strong> são onde essa formação se materializa: técnica a serviço de uma visão.
         </p>
+        <p class="about-bio en-only">
+          Trained in <strong>Animation Cinema &amp; Digital Arts</strong> at CAAD/UFMG (2014–2019) and in Fine Arts at Escola Guignard/UEMG — where I learned that art begins before the tool.
+        </p>
+        <p class="about-bio en-only">
+          Between fine arts and animation cinema there is a productive tension — two worlds that speak to each other while preserving irreducible singularities. It is in that tension that I developed my way of thinking about images.
+        </p>
+        <p class="about-bio en-only">
+          Abstract art, op art, pop art, rotoscopy, 2D &amp; 3D animation, location sound recording and mixing — I immersed myself in aesthetics rarely found in the same résumé. That crossover defines how I produce. The collaboration with <strong>Mary Di Iorio</strong> and projects like <strong>RF Balanças</strong> are where that formation materialises: technique in service of vision.
+        </p>
+        <p class="about-bio pt-only" style="color:var(--muted);font-size:14px;">
+          Pode me chamar de Rafa. E sim — café é essencial.
+        </p>
+        <p class="about-bio en-only" style="color:var(--muted);font-size:14px;">
+          Call me Rafa. And yes — coffee is essential.
+        </p>
+
         <div class="case-tech-title" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">Ferramentas · Tools</div>
         <div class="skills-row">
           <span class="skill-tag">Blender</span>
@@ -338,7 +1136,6 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
           <span class="skill-tag">HTML · CSS · JS</span>
           <span class="skill-tag">Ilustração</span>
           <span class="skill-tag">Animação 2D</span>
-          <span class="skill-tag">Toon Boom</span>
         </div>
       </div>
     </div>
@@ -350,44 +1147,159 @@ footer{padding:24px var(--px);border-top:1px solid var(--border);display:flex;al
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num">04 — Contato</div>
-        <h2 class="sec-title">Vamos <em>trabalhar</em></h2>
-        <div class="sec-en">Let's work together</div>
+        <div class="sec-num pt-only">04 — Contato</div>
+        <div class="sec-num en-only">04 — Contact</div>
+        <h2 class="sec-title pt-only">Vamos <em>trabalhar</em></h2>
+        <h2 class="sec-title en-only">Let's <em>work</em></h2>
+        <div class="sec-en" style="display:none"></div>
       </div>
     </div>
+
     <div class="contact-inner reveal">
       <div class="contact-statement">
-        Projetos de animação e direção audiovisual para <em>arte e cultura.</em>
+        <span class="pt-only">Projetos de animação e direção audiovisual para <em>arte e cultura.</em></span>
+        <span class="en-only">Animation &amp; audiovisual direction projects for <em>art and culture.</em></span>
       </div>
       <div class="contact-right">
-        <div class="contact-label">Email · Contato</div>
-        <a href="mailto:rafaelaugustoxt@gmail.com" class="contact-email">rafaelaugustoxt@gmail.com</a>
-        <p class="contact-note">Baseado em Belo Horizonte · Disponível para projetos nacionais e internacionais</p>
+        <div class="contact-label pt-only">Email · Contato</div>
+        <div class="contact-label en-only">Email · Contact</div>
+        <a href="mailto:rafaelaugustoxt@gmail.com" class="contact-email">
+          rafaelaugustoxt@gmail.com
+        </a>
+        <a href="https://wa.me/5531981169042?text=Ol%C3%A1%20Rafa%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20meu%20projeto." target="_blank" rel="noopener" class="contact-whatsapp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.03a.75.75 0 00.921.912l5.356-1.503A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.71 9.71 0 01-4.964-1.364l-.356-.212-3.688 1.035 1.003-3.587-.232-.368A9.712 9.712 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+          +55 31 98116-9042
+        </a>
+        <p class="contact-note pt-only">Baseado em Contagem, MG · Disponível para projetos nacionais e internacionais</p>
+        <p class="contact-note en-only">Based in Contagem, Brazil · Available for national and international projects</p>
       </div>
     </div>
   </div>
 </section>
 
+<!-- LIGHTBOX -->
+<div class="lb-overlay" id="lb" role="dialog" aria-modal="true" aria-label="Player de vídeo">
+  <div class="lb-box">
+    <button class="lb-close" id="lb-close">Fechar</button>
+    <div class="lb-ratio">
+      <iframe id="lb-iframe" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <div class="lb-fallback" id="lb-fallback">
+        <p class="lb-fallback-msg">Este vídeo não permite incorporação.</p>
+        <a id="lb-fallback-link" href="#" target="_blank" rel="noopener" class="btn-primary">Assistir no YouTube ↗</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <footer>
-  <div class="ft-brand">Rafael Trindade · Animação & Audiovisual · 2026</div>
+  <div class="ft-brand">Rafael Trindade · Animação & Audiovisual · 2025</div>
   <div class="ft-domain">rafaeltrindade.art.br</div>
 </footer>
 
 <script>
+/* Scroll reveal */
 const reveals = document.querySelectorAll('.reveal');
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => {
-    if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
   });
 },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
 reveals.forEach(el => obs.observe(el));
-document.querySelectorAll('a[href^="#"]').forEach(a => {
+
+/* ── Language toggle ── */
+function setLang(lang) {
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.lang = lang === 'pt' ? 'pt-br' : 'en';
+  document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  localStorage.setItem('rt-lang', lang);
+}
+(function(){
+  const saved = localStorage.getItem('rt-lang') || 'pt';
+  setLang(saved);
+})();
+
+/* Smooth scroll para links internos */
+document.querySelectorAll('a[href^="#"]:not([data-video])').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
-    const t = document.querySelector(a.getAttribute('href'));
-    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
   });
 });
+
+/* ── Lightbox ── */
+const lb           = document.getElementById('lb');
+const lbIframe     = document.getElementById('lb-iframe');
+const lbClose      = document.getElementById('lb-close');
+const lbFallback   = document.getElementById('lb-fallback');
+const lbFallbackLk = document.getElementById('lb-fallback-link');
+let currentVideoId = '';
+
+function openLb(videoId) {
+  currentVideoId = videoId;
+  lbFallback.classList.remove('visible');
+  lbIframe.style.display = 'block';
+  lbIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  lbFallbackLk.href = `https://www.youtube.com/watch?v=${videoId}`;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLb() {
+  lb.classList.remove('open');
+  lbIframe.src = '';
+  lbFallback.classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+/* Detecta erro de embed (ex: erro 153 — embedding desativado) */
+lbIframe.addEventListener('load', () => {
+  /* Tenta checar se o iframe carregou conteúdo válido via postMessage.
+     Como fallback simples: aguarda 2s e verifica se a altura do doc é 0
+     (indica bloqueio). Funciona para a maioria dos casos de embed bloqueado. */
+  setTimeout(() => {
+    try {
+      const h = lbIframe.contentWindow.document.body.scrollHeight;
+      if(h === 0) showFallback();
+    } catch(e) {
+      /* cross-origin sem erro = embed ok; com SecurityError = também ok */
+    }
+  }, 2000);
+});
+
+/* YouTube envia mensagem quando o vídeo não pode ser reproduzido */
+window.addEventListener('message', e => {
+  if(e.origin !== 'https://www.youtube.com') return;
+  try {
+    const data = JSON.parse(e.data);
+    if(data.event === 'infoDelivery' && data.info && data.info.playerState === -1) return;
+    /* erro 100, 101, 150, 153 */
+    if(data.event === 'onError' || (data.info && [100,101,150,153].includes(data.info))) {
+      showFallback();
+    }
+  } catch(_){}
+});
+
+function showFallback() {
+  lbIframe.style.display = 'none';
+  lbFallback.classList.add('visible');
+}
+
+document.querySelectorAll('.work-card[data-video]').forEach(card => {
+  card.addEventListener('click', e => {
+    e.preventDefault();
+    openLb(card.dataset.video);
+  });
+});
+
+lbClose.addEventListener('click', closeLb);
+lb.addEventListener('click', e => { if(e.target === lb) closeLb(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLb(); });
 </script>
 </body>
 </html>
