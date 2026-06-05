@@ -281,7 +281,7 @@ header{
 .sec-left{}
 .sec-num{
   font-family:'Space Mono',monospace;
-  font-size:10px;letter-spacing:3px;
+  font-size:12px;letter-spacing:2px;
   text-transform:uppercase;color:var(--teal);
   margin-bottom:8px;
 }
@@ -298,9 +298,9 @@ header{
 }
 .sec-en{
   font-family:'Space Mono',monospace;
-  font-size:10px;letter-spacing:2px;
+  font-size:11px;letter-spacing:2px;
   text-transform:uppercase;
-  color:var(--dim);margin-top:6px;
+  color:var(--muted);margin-top:6px;
 }
 
 /* ─── CASE MARY ─── */
@@ -350,7 +350,7 @@ header{
 .case-info{}
 .case-label{
   font-family:'Space Mono',monospace;
-  font-size:10px;letter-spacing:3px;
+  font-size:12px;letter-spacing:2px;
   text-transform:uppercase;color:var(--teal);
   margin-bottom:12px;
 }
@@ -387,8 +387,8 @@ header{
 .case-tech{}
 .case-tech-title{
   font-family:'Space Mono',monospace;
-  font-size:10px;letter-spacing:3px;
-  text-transform:uppercase;color:var(--dim);
+  font-size:12px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);
   margin-bottom:16px;
 }
 .tech-list{
@@ -427,7 +427,7 @@ header{
 }
 .venice-label{
   font-family:'Space Mono',monospace;
-  font-size:9px;letter-spacing:3px;
+  font-size:11px;letter-spacing:2px;
   text-transform:uppercase;
   color:var(--red);
   white-space:nowrap;
@@ -493,7 +493,7 @@ header{
 .work-body{padding:20px}
 .work-cat{
   font-family:'Space Mono',monospace;
-  font-size:9px;letter-spacing:3px;
+  font-size:11px;letter-spacing:2px;
   text-transform:uppercase;color:var(--amber);
   margin-bottom:8px;
 }
@@ -1069,7 +1069,7 @@ html[data-lang="pt"] .en-only{display:none!important}
       </a>
 
       <!-- RF Balanças -->
-      <a href="#" class="work-card">
+      <a href="#" class="work-card" data-video="QxoJdZLH6oE">
         <img class="work-img" src="https://drive.google.com/thumbnail?id=1KtmwYoHYgiS1P8vOkpBMLWmNTVtyyEkT&sz=w1600" alt="RF Balanças — Animação 3D Industrial"/>
         <div class="work-body">
           <div class="work-cat">Animação 3D · Visualização Industrial</div>
@@ -1240,12 +1240,17 @@ const lbFallback   = document.getElementById('lb-fallback');
 const lbFallbackLk = document.getElementById('lb-fallback-link');
 let currentVideoId = '';
 
-function openLb(videoId) {
+function openLb(videoId, isDrive) {
   currentVideoId = videoId;
   lbFallback.classList.remove('visible');
   lbIframe.style.display = 'block';
-  lbIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
-  lbFallbackLk.href = `https://www.youtube.com/watch?v=${videoId}`;
+  if (isDrive) {
+    lbIframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
+    lbFallbackLk.href = `https://drive.google.com/file/d/${videoId}/view`;
+  } else {
+    lbIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    lbFallbackLk.href = `https://www.youtube.com/watch?v=${videoId}`;
+  }
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1293,7 +1298,14 @@ function showFallback() {
 document.querySelectorAll('.work-card[data-video]').forEach(card => {
   card.addEventListener('click', e => {
     e.preventDefault();
-    openLb(card.dataset.video);
+    openLb(card.dataset.video, false);
+  });
+});
+
+document.querySelectorAll('.work-card[data-drive]').forEach(card => {
+  card.addEventListener('click', e => {
+    e.preventDefault();
+    openLb(card.dataset.drive, true);
   });
 });
 
