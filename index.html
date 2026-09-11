@@ -507,6 +507,83 @@ header{
   color:rgba(240,237,232,.68);line-height:1.6;
 }
 
+
+/* ─── FEATURED PROJECTS (Coragem / RF Balanças) ─── */
+.feature-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+}
+@media(max-width:760px){.feature-grid{grid-template-columns:1fr}}
+
+.feature-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+  transition:border-color .25s;
+  text-decoration:none;color:inherit;
+  display:block;
+}
+.feature-card:hover{border-color:rgba(90,244,255,.35)}
+.feature-card::before{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:2px;
+  background:var(--cyan);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .35s cubic-bezier(.22,1,.36,1);
+}
+.feature-card:hover::before{transform:scaleX(1)}
+
+.feature-img-wrap{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#0d1012}
+.feature-img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.75) brightness(.72);
+  transition:transform .5s,filter .3s;
+}
+.feature-card:hover .feature-img{transform:scale(1.04);filter:saturate(.9) brightness(.85)}
+
+.feature-body{padding:24px 26px 28px}
+.feature-cat{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--amber);
+  margin-bottom:10px;
+}
+.feature-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(20px,2.6vw,26px);font-weight:700;
+  margin-bottom:12px;line-height:1.15;
+}
+.feature-desc{
+  font-size:14px;font-weight:300;
+  color:rgba(240,237,232,.78);
+  line-height:1.75;margin-bottom:16px;
+}
+.feature-credits{
+  display:flex;flex-direction:column;gap:6px;
+  padding-top:14px;border-top:1px solid rgba(240,237,232,.08);
+}
+.feature-credit-item{
+  display:flex;align-items:center;gap:9px;
+  font-size:12.5px;font-weight:300;
+  color:rgba(240,237,232,.6);
+}
+.feature-credit-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+
+
+/* ─── EM PRODUÇÃO ─── */
+.prod-banner{max-width:620px}
+
+.prod-body{}
+.prod-desc{
+  font-size:15px;font-weight:300;
+  color:rgba(240,237,232,.82);
+  line-height:1.8;margin-bottom:16px;
+}
+.prod-desc:last-of-type{margin-bottom:0}
+
 /* ─── ABOUT ─── */
 .about-grid{
   display:grid;
@@ -1002,13 +1079,75 @@ html[data-lang="pt"] .en-only{display:none!important}
   </div>
 </section>
 
+<!-- PROJETOS EM DESTAQUE -->
+<section class="section alt">
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-left">
+        <div class="sec-num pt-only">02 — Projetos em Destaque</div>
+        <div class="sec-num en-only">02 — Featured Projects</div>
+        <h2 class="sec-title pt-only">Direção <em>&</em> Autoria</h2>
+        <h2 class="sec-title en-only">Direction <em>&</em> Authorship</h2>
+        <div class="sec-en pt-only">Música contemporânea e visualização industrial</div>
+        <div class="sec-en en-only">Contemporary music and industrial visualization</div>
+      </div>
+    </div>
+
+    <div class="feature-grid reveal">
+      <!-- Coragem -->
+      <a href="#" data-video="ep698KEspns" class="work-card feature-card">
+        <div class="feature-img-wrap">
+          <img class="feature-img" src="https://img.youtube.com/vi/ep698KEspns/maxresdefault.jpg" alt="Coragem — Carlos Kater"/>
+          <div class="work-play"></div>
+        </div>
+        <div class="feature-body">
+          <div class="feature-cat pt-only">Videoclipe · Música Contemporânea</div>
+          <div class="feature-cat en-only">Music Video · Contemporary Music</div>
+          <div class="feature-title">Coragem — Carlos Kater</div>
+          <p class="feature-desc pt-only">
+            Videoclipe para o Concentus Musicum de BH, com composição de Carlos Kater e regência de Iara Fricke Matte. Parte de uma parceria contínua com o grupo, que inclui também a arte gráfica e edição do Miserere de Manoel Dias de Oliveira.
+          </p>
+          <p class="feature-desc en-only">
+            Music video for Concentus Musicum de BH, composed by Carlos Kater and conducted by Iara Fricke Matte. Part of an ongoing partnership with the ensemble, which also includes graphic art and editing for Manoel Dias de Oliveira's Miserere.
+          </p>
+          <div class="feature-credits">
+            <div class="feature-credit-item"><div class="feature-credit-dot"></div>Realização M&K Cultura, 2024</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- RF Balanças -->
+      <a href="#" data-video="QxoJdZLH6oE" class="work-card feature-card">
+        <div class="feature-img-wrap">
+          <img class="feature-img" src="https://drive.google.com/thumbnail?id=1KtmwYoHYgiS1P8vOkpBMLWmNTVtyyEkT&sz=w1600" alt="RF Balanças — Animação 3D Industrial"/>
+          <div class="work-play"></div>
+        </div>
+        <div class="feature-body">
+          <div class="feature-cat pt-only">Animação 3D · Visualização Industrial</div>
+          <div class="feature-cat en-only">3D Animation · Industrial Visualization</div>
+          <div class="feature-title">RF Balanças</div>
+          <p class="feature-desc pt-only">
+            Modelagem, animação e composição completas em Blender. Visualização do sistema automatizado de pesagem de caminhões — ambiente, sensores, câmeras e interface de controle em operação.
+          </p>
+          <p class="feature-desc en-only">
+            Complete modeling, animation and compositing in Blender. Visualization of an automated truck weighing system — environment, sensors, cameras and control interface in operation.
+          </p>
+          <div class="feature-credits">
+            <div class="feature-credit-item"><div class="feature-credit-dot"></div>Projeto autoral · Blender · 2019</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- OUTROS TRABALHOS -->
 <section class="section alt">
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num pt-only">02 — Outros Trabalhos</div>
-        <div class="sec-num en-only">02 — Other Works</div>
+        <div class="sec-num pt-only">03 — Outros Trabalhos</div>
+        <div class="sec-num en-only">03 — Other Works</div>
         <h2 class="sec-title pt-only">Direção <em>&</em> Produção</h2>
         <h2 class="sec-title en-only">Direction <em>&</em> Production</h2>
         <div class="sec-en" style="display:none"></div>
@@ -1026,19 +1165,6 @@ html[data-lang="pt"] .en-only{display:none!important}
           <div class="work-cat">Videoarte · Música Erudita</div>
           <div class="work-title">Concentus Musicum BH</div>
           <p class="work-desc">Arte gráfica e edição de vídeo para o Madrigal Concentus Musicum de Belo Horizonte. Miserere — Manoel Dias de Oliveira.</p>
-        </div>
-      </a>
-
-      <!-- Videoclipe Kater -->
-      <a href="#" data-video="ep698KEspns" class="work-card">
-        <div class="work-img-wrap">
-          <img class="work-img" src="https://img.youtube.com/vi/ep698KEspns/maxresdefault.jpg" alt="Coragem — Carlos Kater"/>
-          <div class="work-play"></div>
-        </div>
-        <div class="work-body">
-          <div class="work-cat">Videoclipe · Música Contemporânea</div>
-          <div class="work-title">Coragem — Carlos Kater</div>
-          <p class="work-desc">Videoclipe para o Concentus Musicum de BH. Composição de Carlos Kater, regência de Iara Fricke Matte. Realização M&K Cultura, 2024.</p>
         </div>
       </a>
 
@@ -1068,15 +1194,41 @@ html[data-lang="pt"] .en-only{display:none!important}
         </div>
       </a>
 
-      <!-- RF Balanças -->
-      <a href="#" class="work-card" data-video="QxoJdZLH6oE">
-        <img class="work-img" src="https://drive.google.com/thumbnail?id=1KtmwYoHYgiS1P8vOkpBMLWmNTVtyyEkT&sz=w1600" alt="RF Balanças — Animação 3D Industrial"/>
-        <div class="work-body">
-          <div class="work-cat">Animação 3D · Visualização Industrial</div>
-          <div class="work-title">RF Balanças</div>
-          <p class="work-desc">Modelagem, animação e composição completas em Blender. Visualização do sistema automatizado de pesagem de caminhões — ambiente, sensores, câmeras e interface de controle em operação.</p>
-        </div>
-      </a>
+    </div>
+  </div>
+</section>
+
+<!-- EM PRODUÇÃO -->
+<section class="section alt">
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-left">
+        <div class="sec-num pt-only">04 — Em Produção</div>
+        <div class="sec-num en-only">04 — In Production</div>
+        <h2 class="sec-title pt-only">Os Limites <em>do Acolhimento</em></h2>
+        <h2 class="sec-title en-only">The Limits <em>of Welcoming</em></h2>
+        <div class="sec-en pt-only">Curta-metragem de animação autoral</div>
+        <div class="sec-en en-only">Independent animated short film</div>
+      </div>
+    </div>
+
+    <div class="prod-banner reveal">
+      <div class="prod-body">
+        <div class="case-tag pt-only">Novo projeto: em breve</div>
+        <div class="case-tag en-only">New project: coming soon</div>
+        <p class="prod-desc pt-only" style="margin-top:20px">
+          Um curta-metragem autoral sobre marginalização social e a possibilidade de conexão mesmo diante de marcas permanentes. Estrutura em cinco atos, com três registros visuais distintos — do expressionismo alemão à estética de jogos de plataforma 2D subvertida, até o neorrealismo italiano.
+        </p>
+        <p class="prod-desc pt-only">
+          Cerca de 6 minutos de animação já produzidos, em produção independente e contínua.
+        </p>
+        <p class="prod-desc en-only" style="margin-top:20px">
+          An independent animated short about social marginalization and the possibility of connection despite permanent damage. Structured in five acts, spanning three distinct visual registers — from German Expressionism to a subverted 2D platform-game aesthetic, to Italian Neorealism.
+        </p>
+        <p class="prod-desc en-only">
+          About 6 minutes of animation completed so far, in ongoing independent production.
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -1086,8 +1238,8 @@ html[data-lang="pt"] .en-only{display:none!important}
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num pt-only">03 — Sobre</div>
-        <div class="sec-num en-only">03 — About</div>
+        <div class="sec-num pt-only">05 — Sobre</div>
+        <div class="sec-num en-only">05 — About</div>
         <h2 class="sec-title pt-only">Quem <em>sou</em></h2>
         <h2 class="sec-title en-only">Who <em>I am</em></h2>
         <div class="sec-en" style="display:none"></div>
@@ -1147,8 +1299,8 @@ html[data-lang="pt"] .en-only{display:none!important}
   <div class="sec-wrap">
     <div class="sec-header reveal">
       <div class="sec-left">
-        <div class="sec-num pt-only">04 — Contato</div>
-        <div class="sec-num en-only">04 — Contact</div>
+        <div class="sec-num pt-only">06 — Contato</div>
+        <div class="sec-num en-only">06 — Contact</div>
         <h2 class="sec-title pt-only">Vamos <em>trabalhar</em></h2>
         <h2 class="sec-title en-only">Let's <em>work</em></h2>
         <div class="sec-en" style="display:none"></div>
